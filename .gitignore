@@ -1,0 +1,29 @@
+# 🟩 Node Modules (both frontend and backend)
+node_modules/
+ai_ticket_assistant/node_modules/
+Saarthi_AI_Frontend/node_modules/
+
+# 🔐 Environment Files
+.env
+ai_ticket_assistant/.env
+Saarthi_AI_Frontend/.env
+
+# ⚙️ Build / Dist folders (for Vite or future bundling)
+dist/
+Saarthi_AI_Frontend/dist/
+
+# 💾 Log files
+*.log
+npm-debug.log*
+
+# 🧠 IDE files (optional but good practice)
+.vscode/
+.idea/
+
+# 🖼️ OS-specific system files
+.DS_Store
+Thumbs.db
+
+# 🔁 Local test/output folders (if any)
+*.local
+*.cache
