@@ -41,12 +41,16 @@ export const getTickets = async (req, res) => {
     let tickets = [];
 
     if (user.role !== "user") {
+      // Admin, moderator, or helper
       tickets = await Ticket.find({})
-        .populate("assignedTo", ["email", "_id"])
+        .populate("assignedTo", ["email", "name", "_id"])
+        .populate("createdBy", ["email", "name", "_id"])
         .sort({ createdAt: -1 });
     } else {
+      // Regular user - only see their own tickets
       tickets = await Ticket.find({ createdBy: user._id })
-        .select("title description status createdAt")
+        .populate("assignedTo", ["email", "name", "_id"])
+        .populate("createdBy", ["email", "name", "_id"])
         .sort({ createdAt: -1 });
     }
 
@@ -57,18 +61,25 @@ export const getTickets = async (req, res) => {
   }
 };
 
+
 export const getTicket = async (req, res) => {
   try {
     const user = req.user;
     let ticket;
 
     if (user.role !== "user") {
-      ticket = await Ticket.findById(req.params.id).populate("assignedTo", ["email", "_id"]);
+      // Admin or staff can access any ticket
+      ticket = await Ticket.findById(req.params.id)
+        .populate("assignedTo", ["email", "name", "_id"])
+        .populate("createdBy", ["email", "name", "_id"]);
     } else {
+      // Regular user can only access their own ticket
       ticket = await Ticket.findOne({
-        createdBy: user._id,
         _id: req.params.id,
-      }).select("title description status createdAt");
+        createdBy: user._id,
+      })
+        .populate("assignedTo", ["email", "name", "_id"])
+        .populate("createdBy", ["email", "name", "_id"]);
     }
 
     if (!ticket) {

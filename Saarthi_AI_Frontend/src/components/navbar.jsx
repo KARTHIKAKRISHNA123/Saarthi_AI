@@ -38,6 +38,20 @@ export default function Navbar() {
                 Admin
               </Link>
             ) : null}
+            {
+                user && user?.role === "admin" ? (
+                    <Link to='/tickets' className="btn btn-sm">
+                        Tickets
+                    </Link>
+                ) : null
+            }
+            {
+                user && user?.role === "moderator" ? (
+                    <Link to='/moderator' className="btn btn-sm">
+                        Tickets
+                    </Link>
+                ) : null
+            }
             <button onClick={logout} className="btn btn-sm">
               Logout
             </button>

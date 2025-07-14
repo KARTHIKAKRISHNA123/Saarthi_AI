@@ -15,7 +15,8 @@ export default function Tickets() {
         method: "GET",
       });
       const data = await res.json();
-      setTickets(data.tickets || []);
+      
+      setTickets(data);
     } catch (err) {
       console.error("Failed to fetch tickets:", err);
     }
