@@ -1,5 +1,5 @@
 import { sendMail } from "../../utils_or_libs/mailer.js";
-import { Inngest } from "../client.js";
+import { inngest } from "../client.js";
 import Ticket from "../../models/ticket.js";
 
 import User from "../../models/user.model.js";

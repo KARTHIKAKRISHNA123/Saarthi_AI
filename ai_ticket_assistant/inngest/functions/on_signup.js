@@ -1,10 +1,10 @@
-import { Inngest } from "../client.js";
+import { inngest } from "../client.js";
 
 import User from "../../models/user.model.js";
 import { NonRetriableError } from "inngest";
 import {sendMail} from "../../utils_or_libs/mailer.js";
 
-export const onSignup = inngest.createFunction(
+export const onUserSignup = inngest.createFunction(
   { id: "on-user-signup", retries: 2 },
   { event: "user/signup" },
   async ({ event, step }) => {
