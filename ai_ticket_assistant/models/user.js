@@ -12,11 +12,13 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,   
-        default: 'user',
-        enum: ['user', 'moderator', 'admin']
+        
+        enum: ['user', 'moderator', 'admin'],
+        default: 'user'
     },
     skills: {
-        type: [String]
+        type: [String], 
+        default: []
     },
     createdAt: {
         type: Date,

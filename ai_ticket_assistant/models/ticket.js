@@ -1,31 +1,27 @@
 import mongoose from 'mongoose';
+
 const ticketSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    status: {
-        type: String,
-        
-        default: 'TODO'
-    },
-    createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
-    assignedTo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default: null
-    },
-    priority: String,
-    deadline: Date,
-    helpfulNotes: String,
-    relatedSkill: [String],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  status: { type: String, default: "TODO" },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
+  priority: { type: String },
+  deadline: { type: Date },
+  helpfulNotes: { type: String },
+  relatedSkills: [String], // ✅ Fixed typo: was `relatedSkill`
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-
-export default mongoose.model('Ticket', ticketSchema);
-  
+export default mongoose.model("Ticket", ticketSchema);

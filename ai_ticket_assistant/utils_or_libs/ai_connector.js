@@ -1,66 +1,66 @@
-import { createAgent, gemini } from "@inngest/agent-kit";
+import axios from "axios";
 
-const analyzeTicket = async (ticket) => {
-  const supportAgent = createAgent({
-    model: gemini({
-      model: "gemini-1.5-flash-8b",
-      apiKey: process.env.GEMINI_API_KEY,
-    }),
-    name: "AI Ticket Triage Assistant",
-    system: `You are an expert AI assistant that processes technical support tickets. 
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
-Your job is to:
-1. Summarize the issue.
-2. Estimate its priority.
-3. Provide helpful notes and resource links for human moderators.
-4. List relevant technical skills required.
+export default async function analyzeTicket(ticket) {
+  try {
+    const prompt = `
+You are a ticket triage assistant. Analyze this support ticket and return ONLY valid JSON. Do NOT include markdown, code fences, or extra text.
 
-IMPORTANT:
-- Respond with *only* valid raw JSON.
-- Do NOT include markdown, code fences, comments, or any extra formatting.
-- The format must be a raw JSON object.
-
-Repeat: Do not wrap your output in markdown or code fences.`,
-  });
-
-  const response = await supportAgent.run(`
-        You are a ticket triage agent. Only return a strict JSON object with no extra text, headers, or markdown.
-        
-Analyze the following support ticket and provide a JSON object with:
-
-- summary: A short 1-2 sentence summary of the issue.
-- priority: One of "low", "medium", or "high".
-- helpfulNotes: A detailed technical explanation that a moderator can use to solve this issue. Include useful external links or resources if possible.
-- relatedSkills: An array of relevant skills required to solve the issue (e.g., ["React", "MongoDB"]).
-
-Respond ONLY in this JSON format and do not include any other text or markdown in the answer:
-
+Return the following fields:
 {
-"summary": "Short summary of the ticket",
-"priority": "high",
-"helpfulNotes": "Here are useful tips...",
-"relatedSkills": ["React", "Node.js"]
+  "summary": "Short summary of the issue",
+  "priority": "low" | "medium" | "high",
+  "helpfulNotes": "Technical explanation with tips",
+  "relatedSkills": ["string", "string"]
 }
 
----
+Ticket Title: ${ticket.title}
+Description: ${ticket.description}
+    `;
 
-Ticket information:
+    const response = await axios.post(GEMINI_API_URL, {
+      contents: [{ parts: [{ text: prompt }] }],
+    });
 
-- Title: ${ticket.title}
-- Description: ${ticket.description}`);
+    const text = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
-const raw = response.output[0].context
+    if (!text) {
+      console.error("⚠️ Empty response from Gemini AI");
+      return null;
+    }
 
-try {
-    const match = raw.match(/```json\s*([\s\S]*?)\s*```/i);
-    const jsonString = match ? match[1]: raw.trim();
-    return json.parse(jsonString);
+    // ✅ Strip code fences if present
+    const cleaned = text.replace(/```json|```/g, "").trim();
 
-} catch (e) {
-    console.log("Failed to parse JSON from AI response" + e.message);
+    // ✅ Parse JSON safely
+    try {
+      const parsed = JSON.parse(cleaned);
+      return parsed;
+    } catch (err) {
+      console.error("❌ Failed to parse AI response as JSON:", err.message);
+      console.log("📦 Raw AI Output:\n", text);
+      return null;
+    }
+  } catch (error) {
+    console.error("❌ AI Ticket Analysis Error:", error.message);
     return null;
-    
+  }
 }
-};
 
-export default analyzeTicket;
+
+//
+// 🧪 Optional Local Test Block
+//
+if (process.env.NODE_ENV !== "production") {
+  const testTicket = {
+    title: "Login button not working",
+    description:
+      "The login form does not respond after clicking the login button. Suspected issue with event handler or fetch call.",
+  };
+
+  analyzeTicket(testTicket).then((result) => {
+    console.log("AI Analysis Result:");
+    console.log(JSON.stringify(result, null, 2));
+  });
+}

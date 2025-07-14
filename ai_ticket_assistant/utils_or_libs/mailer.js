@@ -1,31 +1,28 @@
-import { text } from "express";
 import nodemailer from "nodemailer";
 
 export const sendMail = async (to, subject, text) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.MAILTRAP_SMTP_HOST,
-      port: process.env.MAILTRAP_SMTP_PORT,
-      secure: false, // true for 465, false for other ports
+      port: Number(process.env.MAILTRAP_SMTP_PORT),
+      secure: false, // Mailtrap uses port 587 (insecure) or 2525 (also insecure, usually)
       auth: {
-        user: process.env.MAILTRAP_SMTP_USER, // generated ethereal user
-        pass: process.env.MAILTRAP_SMTP_PASS, // generated ethereal password
+        user: process.env.MAILTRAP_SMTP_USER,
+        pass: process.env.MAILTRAP_SMTP_PASS,
       },
     });
 
     const info = await transporter.sendMail({
-      from: '"Ingest TMS" ',
-      to: to, // list of receivers
-      subject: subject, // Subject line
-      text: text, // plain text body
+      from: '"Saarthi AI" <noreply@saarthi.ai>', // more realistic sender
+      to,
+      subject,
+      text,
     });
 
-    console.log("Message sent: %s", info.messageId);
+    console.log("✅ Mail sent: %s", info.messageId);
     return info;
-  } 
-  catch (error) {
-    console.error("Error sending email:", error.message);
+  } catch (error) {
+    console.error("❌ Error sending email:", error.message);
     throw error;
-
   }
 };
