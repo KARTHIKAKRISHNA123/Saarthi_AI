@@ -21,6 +21,7 @@ export default function TicketDetailsPage() {
           }
         );
         const data = await res.json();
+        console.log(data);
         if (res.ok) {
           setTicket(data.ticket);
         } else {
@@ -81,6 +82,11 @@ export default function TicketDetailsPage() {
             {ticket.assignedTo && (
               <p>
                 <strong>Assigned To:</strong> {ticket.assignedTo?.email}
+              </p>
+            )}
+            {ticket.createdBy && (
+              <p>
+                <strong>Created By:</strong> {ticket.createdBy?.email}
               </p>
             )}
 

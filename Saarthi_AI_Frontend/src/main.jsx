@@ -10,6 +10,7 @@ import Login from "./pages/login.jsx";
 import Signup from "./pages/signup.jsx";
 import Admin from "./pages/admin.jsx";
 import Layout from "./components/Layout.jsx"; // ✅ Uses Navbar + Outlet
+import TicketsList from "./pages/TicketsList.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,12 +19,12 @@ createRoot(document.getElementById("root")).render(
         {/* ✅ Protected Routes - with Layout (Navbar inside Layout) */}
         <Route
           element={
-            <CheckAuth protected={true}>
               <Layout />
-            </CheckAuth>
           }
-        >
+            >
           <Route path="/" element={<Tickets />} />
+          <Route path="/tickets/" element={<TicketsList role={'admin'}/>} />
+          <Route path="/moderator" element={<TicketsList role={'moderator'} />} />
           <Route path="/tickets/:id" element={<TicketDetailsPage />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
