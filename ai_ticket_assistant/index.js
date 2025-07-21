@@ -4,6 +4,16 @@ import mongoose from 'mongoose';
 import { serve } from 'inngest/express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "../Saarthi_AI_Frontend/dist")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../Saarthi_AI_Frontend/dist", "index.html"));
+});
 
 import userRoutes from './routes/user.js';         // ✅ User route
 import ticketRoutes from './routes/ticket.js';     // ✅ FIXED: this should point to ticket route, not model
@@ -38,3 +48,4 @@ mongoose.connect(process.env.MONGO_URI)
     });
   })
   .catch((err) => console.error('❌ MongoDB connection error:', err));
+  
